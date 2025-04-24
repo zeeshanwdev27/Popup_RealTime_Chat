@@ -15,15 +15,22 @@ export default function DashboardPage() {
         if (exists) {
           return prev.map((v) =>
             v.id === visitor.id
-              ? { ...v, lastMessage: visitor.message, messages: [...(v.messages || []), { text: visitor.message, type: 'incoming' }] }
+              ? {
+                  ...v,
+                  lastMessage: visitor.message, // ✅ always keep updated
+                  messages: [...(v.messages || []), { text: visitor.message, type: 'incoming' }],
+                }
               : v
           );
         }
+
+        // ✅ When new visitor first arrives — set lastMessage too
         return [
           ...prev,
           {
             ...visitor,
             joined: false,
+            lastMessage: visitor.message, // ✅ Show this on list immediately
             messages: [{ text: visitor.message, type: 'incoming' }],
           },
         ];
@@ -65,15 +72,15 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-container">
-    <VisitorList
-      visitors={visitors}
-      onSelect={handleSelect}
-      selectedVisitor={selectedVisitor}
-    />
-    <ChatWindow
-      visitor={visitors.find((v) => v.id === selectedVisitor?.id)}
-      onSend={handleSendMessage}
-    />
-  </div>
+      <VisitorList
+        visitors={visitors}
+        onSelect={handleSelect}
+        selectedVisitor={selectedVisitor}
+      />
+      <ChatWindow
+        visitor={visitors.find((v) => v.id === selectedVisitor?.id)}
+        onSend={handleSendMessage}
+      />
+    </div>
   );
 }
