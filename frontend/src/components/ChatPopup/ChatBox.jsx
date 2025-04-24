@@ -1,41 +1,40 @@
-import { useEffect, useState } from 'react';
-import socket from '../../sockets/socket';
-import './chatPopup.css';
-import { FiX, FiSend } from 'react-icons/fi';
+import { useEffect, useState } from "react";
+import socket from "../../sockets/socket";
+import "./chatPopup.css";
+import { FiX, FiSend } from "react-icons/fi";
 
 export default function ChatBox({ onClose }) {
   const [messages, setMessages] = useState([]);
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const [visitorId, setVisitorId] = useState(null);
 
   useEffect(() => {
     const handleConnect = () => {
       const id = socket.id;
       setVisitorId(id);
-  
+
       const handleMessage = (msg) => {
-        if (msg.from === 'visitor' || msg.from === undefined) return;
-        setMessages((prev) => [...prev, { ...msg, type: 'incoming' }]);
+        if (msg.from === "visitor" || msg.from === undefined) return;
+        setMessages((prev) => [...prev, { ...msg, type: "incoming" }]);
       };
-  
+
       socket.on(`chat:${id}`, handleMessage);
-  
+
       // Cleanup
       return () => {
         socket.off(`chat:${id}`, handleMessage);
       };
     };
-  
+
     if (socket.connected) {
       return handleConnect(); // Call and return cleanup
     } else {
-      socket.on('connect', handleConnect);
+      socket.on("connect", handleConnect);
       return () => {
-        socket.off('connect', handleConnect);
+        socket.off("connect", handleConnect);
       };
     }
   }, []);
-  
 
   const sendMessage = () => {
     if (text.trim()) {
@@ -45,15 +44,15 @@ export default function ChatBox({ onClose }) {
       };
 
       // Send visitor message to backend
-      socket.emit('visitor_message', {
+      socket.emit("visitor_message", {
         id: visitorId,
         message: text,
-        from: 'visitor', 
+        from: "visitor",
       });
 
       // Show in local state
-      setMessages((prev) => [...prev, { message: text, type: 'outgoing' }]);
-      setText('');
+      setMessages((prev) => [...prev, { message: text, type: "outgoing" }]);
+      setText("");
     }
   };
 
@@ -61,7 +60,9 @@ export default function ChatBox({ onClose }) {
     <div className="chatbox">
       <div className="chat-header">
         <span>Chat Support</span>
-        <button onClick={onClose}><FiX size={20} /></button>
+        <button onClick={onClose}>
+          <FiX size={20} />
+        </button>
       </div>
 
       <div className="chat-messages">
@@ -72,14 +73,24 @@ export default function ChatBox({ onClose }) {
         ))}
       </div>
 
-      <div className="chat-input">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Type your message..."
-        />
-        <button onClick={sendMessage}><FiSend size={18} /></button>
-      </div>
+
+        <form
+          className="chat-input"
+          onSubmit={(e) => {
+            e.preventDefault();
+            sendMessage();
+          }}
+        >
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Type your message..."
+          />
+          <button type="submit">
+            <FiSend size={18} />
+          </button>
+        </form>
+
     </div>
   );
 }

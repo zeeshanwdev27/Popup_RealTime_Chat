@@ -1,13 +1,14 @@
-import { useState } from 'react';
-import MessageBubble from './MessageBubble';
+import { useState } from "react";
+import MessageBubble from "./MessageBubble";
+import { FiSend } from "react-icons/fi";
 
 export default function ChatWindow({ visitor, onSend }) {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
 
   const sendMessage = () => {
     if (!text.trim()) return;
     onSend(text);
-    setText('');
+    setText("");
   };
 
   return (
@@ -24,7 +25,13 @@ export default function ChatWindow({ visitor, onSend }) {
               />
             ))}
           </div>
-          <div className="chat-input">
+
+          <form className="chat-input"
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendMessage();
+            }}
+          >
             <input
               type="text"
               placeholder="Type your message..."
@@ -32,11 +39,14 @@ export default function ChatWindow({ visitor, onSend }) {
               onChange={(e) => setText(e.target.value)}
               disabled={!visitor.joined}
             />
-            <button onClick={sendMessage} disabled={!visitor.joined}>Send</button>
-          </div>
+            <button onClick={sendMessage} disabled={!visitor.joined}>
+            <FiSend size={20} />
+            </button>
+          </form>
+
         </>
       ) : (
-        <div className="no-chat">Select a visitor to view chat</div>
+        <div className="no-chat">Select a visitor to start chat</div>
       )}
     </div>
   );
