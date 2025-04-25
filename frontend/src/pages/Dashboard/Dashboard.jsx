@@ -3,12 +3,17 @@ import ChatWindow from './ChatWindow';
 import './dashboard.css';
 import { useState, useEffect } from 'react';
 import socket from '../../sockets/socket';
+import Navbar from '../../components/Navbar';
 
 export default function DashboardPage() {
   const [visitors, setVisitors] = useState([]);
   const [selectedVisitor, setSelectedVisitor] = useState(null);
 
   useEffect(() => {
+
+    const token = localStorage.getItem('token');
+    if (!token) return (window.location.href = '/sign-in');
+
     socket.on('visitor_message', (visitor) => {
       setVisitors((prev) => {
         const exists = prev.find((v) => v.id === visitor.id);
@@ -71,16 +76,19 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="dashboard-container">
-      <VisitorList
-        visitors={visitors}
-        onSelect={handleSelect}
-        selectedVisitor={selectedVisitor}
-      />
-      <ChatWindow
-        visitor={visitors.find((v) => v.id === selectedVisitor?.id)}
-        onSend={handleSendMessage}
-      />
+    <div className="dashboard-wrapper">
+      <Navbar />
+      <div className="dashboard-container">
+        <VisitorList
+          visitors={visitors}
+          onSelect={handleSelect}
+          selectedVisitor={selectedVisitor}
+        />
+        <ChatWindow
+          visitor={visitors.find((v) => v.id === selectedVisitor?.id)}
+          onSend={handleSendMessage}
+        />
+      </div>
     </div>
   );
 }

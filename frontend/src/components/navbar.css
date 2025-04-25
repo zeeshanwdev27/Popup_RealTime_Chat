@@ -1,0 +1,25 @@
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 96%;
+  background-color: #1e293b; /* Dark background */
+  color: #f8fafc; /* Light text */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.username h1 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Ensure button is aligned and spaced well */
+nav > div:last-child {
+  display: flex;
+  align-items: center;
+}
